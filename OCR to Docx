@@ -1,0 +1,1434 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNQWER1jRrNWpz0919f5pPf"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install pdf2image pytesseract python-docx\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "5nLDGjM4vWvI",
+        "outputId": "3f7fe819-ad2a-457a-b552-01b32e088328"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pdf2image in /usr/local/lib/python3.11/dist-packages (1.17.0)\n",
+            "Requirement already satisfied: pytesseract in /usr/local/lib/python3.11/dist-packages (0.3.13)\n",
+            "Requirement already satisfied: python-docx in /usr/local/lib/python3.11/dist-packages (1.1.2)\n",
+            "Requirement already satisfied: pillow in /usr/local/lib/python3.11/dist-packages (from pdf2image) (11.1.0)\n",
+            "Requirement already satisfied: packaging>=21.3 in /usr/local/lib/python3.11/dist-packages (from pytesseract) (24.2)\n",
+            "Requirement already satisfied: lxml>=3.1.0 in /usr/local/lib/python3.11/dist-packages (from python-docx) (5.3.1)\n",
+            "Requirement already satisfied: typing-extensions>=4.9.0 in /usr/local/lib/python3.11/dist-packages (from python-docx) (4.12.2)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens. Aumente o dpi para melhorar a qualidade do OCR, se necessário.\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "\n",
+        "    # Cria um novo documento Word\n",
+        "    document = Document()\n",
+        "\n",
+        "    # Itera sobre cada página convertida\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extrai o texto da imagem usando OCR.\n",
+        "        # Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\n",
+        "        text = pytesseract.image_to_string(page, lang='por')\n",
+        "\n",
+        "        # Adiciona um título para identificar a página (opcional)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "\n",
+        "        # Adiciona o texto extraído como um parágrafo no documento\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    # Salva o documento Word\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "if __name__ == '__main__':\n",
+        "    # Caminho do PDF escaneado\n",
+        "    pdf_path = 'file:///C:/Users/JoaoTaylor/Downloads/20211209%20AVV%20Art.%2028%20Abs%203%20DS-GVO_plenum_MAXWORX.pdf'\n",
+        "\n",
+        "    # Caminho de saída para o arquivo Word. Note que estamos gerando um .docx.\n",
+        "    # Caso seja estritamente necessário o formato .doc, você poderá converter posteriormente.\n",
+        "    output_word_path = 'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\n",
+        "\n",
+        "    pdf_to_word(pdf_path, output_word_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 495
+        },
+        "id": "_hV9LnR_vaZY",
+        "outputId": "e86c77c6-7a5b-443e-c936-bb4a0c83b286"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "PDFInfoNotInstalledError",
+          "evalue": "Unable to get page count. Is poppler installed and in PATH?",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mFileNotFoundError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    580\u001b[0m             \u001b[0menv\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"LD_LIBRARY_PATH\"\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpoppler_path\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m\":\"\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0menv\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"LD_LIBRARY_PATH\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 581\u001b[0;31m         \u001b[0mproc\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mPopen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcommand\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0menv\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0menv\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstdout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mPIPE\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstderr\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mPIPE\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    582\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/lib/python3.11/subprocess.py\u001b[0m in \u001b[0;36m__init__\u001b[0;34m(self, args, bufsize, executable, stdin, stdout, stderr, preexec_fn, close_fds, shell, cwd, env, universal_newlines, startupinfo, creationflags, restore_signals, start_new_session, pass_fds, user, group, extra_groups, encoding, errors, text, umask, pipesize, process_group)\u001b[0m\n\u001b[1;32m   1025\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1026\u001b[0;31m             self._execute_child(args, executable, preexec_fn, close_fds,\n\u001b[0m\u001b[1;32m   1027\u001b[0m                                 \u001b[0mpass_fds\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcwd\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0menv\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/lib/python3.11/subprocess.py\u001b[0m in \u001b[0;36m_execute_child\u001b[0;34m(self, args, executable, preexec_fn, close_fds, pass_fds, cwd, env, startupinfo, creationflags, shell, p2cread, p2cwrite, c2pread, c2pwrite, errread, errwrite, restore_signals, gid, gids, uid, umask, start_new_session, process_group)\u001b[0m\n\u001b[1;32m   1954\u001b[0m                     \u001b[0;32mif\u001b[0m \u001b[0merr_filename\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1955\u001b[0;31m                         \u001b[0;32mraise\u001b[0m \u001b[0mchild_exception_type\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0merrno_num\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merr_msg\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merr_filename\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1956\u001b[0m                     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mFileNotFoundError\u001b[0m: [Errno 2] No such file or directory: 'pdfinfo'",
+            "\nDuring handling of the above exception, another exception occurred:\n",
+            "\u001b[0;31mPDFInfoNotInstalledError\u001b[0m                  Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-8-2ca748900b6b>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     35\u001b[0m     \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 37\u001b[0;31m     \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-8-2ca748900b6b>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      7\u001b[0m     \u001b[0;31m# Converte o PDF em imagens. Aumente o dpi para melhorar a qualidade do OCR, se necessário.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 8\u001b[0;31m     \u001b[0mpages\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mconvert_from_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdpi\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m300\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      9\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     10\u001b[0m     \u001b[0;31m# Cria um novo documento Word\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mconvert_from_path\u001b[0;34m(pdf_path, dpi, output_folder, first_page, last_page, fmt, jpegopt, thread_count, userpw, ownerpw, use_cropbox, strict, transparent, single_file, output_file, poppler_path, grayscale, size, paths_only, use_pdftocairo, timeout, hide_annotations)\u001b[0m\n\u001b[1;32m    125\u001b[0m         \u001b[0mpoppler_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mas_posix\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    126\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 127\u001b[0;31m     page_count = pdfinfo_from_path(\n\u001b[0m\u001b[1;32m    128\u001b[0m         \u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0muserpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mownerpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mpoppler_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    129\u001b[0m     )[\"Pages\"]\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    605\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    606\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mOSError\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 607\u001b[0;31m         raise PDFInfoNotInstalledError(\n\u001b[0m\u001b[1;32m    608\u001b[0m             \u001b[0;34m\"Unable to get page count. Is poppler installed and in PATH?\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    609\u001b[0m         )\n",
+            "\u001b[0;31mPDFInfoNotInstalledError\u001b[0m: Unable to get page count. Is poppler installed and in PATH?"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!apt-get install poppler-utils"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "dhMSfVj5wx0c",
+        "outputId": "6493949b-d835-45e1-bf88-039f16edf4c3"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "The following NEW packages will be installed:\n",
+            "  poppler-utils\n",
+            "0 upgraded, 1 newly installed, 0 to remove and 20 not upgraded.\n",
+            "Need to get 186 kB of archives.\n",
+            "After this operation, 696 kB of additional disk space will be used.\n",
+            "Get:1 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 poppler-utils amd64 22.02.0-2ubuntu0.6 [186 kB]\n",
+            "Fetched 186 kB in 0s (446 kB/s)\n",
+            "Selecting previously unselected package poppler-utils.\n",
+            "(Reading database ... 124926 files and directories currently installed.)\n",
+            "Preparing to unpack .../poppler-utils_22.02.0-2ubuntu0.6_amd64.deb ...\n",
+            "Unpacking poppler-utils (22.02.0-2ubuntu0.6) ...\n",
+            "Setting up poppler-utils (22.02.0-2ubuntu0.6) ...\n",
+            "Processing triggers for man-db (2.10.2-1) ...\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "uploaded = files.upload()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 110
+        },
+        "id": "J0poNlfmxiKK",
+        "outputId": "2c36caa0-80c8-4732-8891-06d35bc965f5"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-427c03a4-3b6f-4bd2-b5c8-517a52d0c07a\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-427c03a4-3b6f-4bd2-b5c8-517a52d0c07a\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf to 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens. Aumente o dpi para melhorar a qualidade do OCR, se necessário.\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "\n",
+        "    # Cria um novo documento Word\n",
+        "    document = Document()\n",
+        "\n",
+        "    # Itera sobre cada página convertida\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extrai o texto da imagem usando OCR.\n",
+        "        # Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\n",
+        "        text = pytesseract.image_to_string(page, lang='por')\n",
+        "\n",
+        "        # Adiciona um título para identificar a página (opcional)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "\n",
+        "        # Adiciona o texto extraído como um parágrafo no documento\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    # Salva o documento Word\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "if __name__ == '__main__':\n",
+        "    # Caminho do PDF escaneado\n",
+        "    pdf_path = '20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf'\n",
+        "\n",
+        "    # Caminho de saída para o arquivo Word. Note que estamos gerando um .docx.\n",
+        "    # Caso seja estritamente necessário o formato .doc, você poderá converter posteriormente.\n",
+        "    output_word_path = 'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\n",
+        "\n",
+        "    pdf_to_word(pdf_path, output_word_path)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 495
+        },
+        "id": "OpjxeCiByHKd",
+        "outputId": "4107644a-df32-44e2-aa7e-0e9af6f0a7c5"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "TesseractNotFoundError",
+          "evalue": "tesseract is not installed or it's not in your PATH. See README file for more information.",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mFileNotFoundError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mrun_tesseract\u001b[0;34m(input_filename, output_filename_base, extension, lang, config, nice, timeout)\u001b[0m\n\u001b[1;32m    274\u001b[0m     \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 275\u001b[0;31m         \u001b[0mproc\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0msubprocess\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mPopen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcmd_args\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m**\u001b[0m\u001b[0msubprocess_args\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    276\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mOSError\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0me\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/lib/python3.11/subprocess.py\u001b[0m in \u001b[0;36m__init__\u001b[0;34m(self, args, bufsize, executable, stdin, stdout, stderr, preexec_fn, close_fds, shell, cwd, env, universal_newlines, startupinfo, creationflags, restore_signals, start_new_session, pass_fds, user, group, extra_groups, encoding, errors, text, umask, pipesize, process_group)\u001b[0m\n\u001b[1;32m   1025\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1026\u001b[0;31m             self._execute_child(args, executable, preexec_fn, close_fds,\n\u001b[0m\u001b[1;32m   1027\u001b[0m                                 \u001b[0mpass_fds\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcwd\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0menv\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/lib/python3.11/subprocess.py\u001b[0m in \u001b[0;36m_execute_child\u001b[0;34m(self, args, executable, preexec_fn, close_fds, pass_fds, cwd, env, startupinfo, creationflags, shell, p2cread, p2cwrite, c2pread, c2pwrite, errread, errwrite, restore_signals, gid, gids, uid, umask, start_new_session, process_group)\u001b[0m\n\u001b[1;32m   1954\u001b[0m                     \u001b[0;32mif\u001b[0m \u001b[0merr_filename\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1955\u001b[0;31m                         \u001b[0;32mraise\u001b[0m \u001b[0mchild_exception_type\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0merrno_num\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merr_msg\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merr_filename\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1956\u001b[0m                     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mFileNotFoundError\u001b[0m: [Errno 2] No such file or directory: 'tesseract'",
+            "\nDuring handling of the above exception, another exception occurred:\n",
+            "\u001b[0;31mTesseractNotFoundError\u001b[0m                    Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-16-7808aedb408b>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     35\u001b[0m     \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 37\u001b[0;31m     \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-16-7808aedb408b>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     15\u001b[0m         \u001b[0;31m# Extrai o texto da imagem usando OCR.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     16\u001b[0m         \u001b[0;31m# Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 17\u001b[0;31m         \u001b[0mtext\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpytesseract\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mimage_to_string\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpage\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlang\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'por'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     18\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     19\u001b[0m         \u001b[0;31m# Adiciona um título para identificar a página (opcional)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mimage_to_string\u001b[0;34m(image, lang, config, nice, output_type, timeout)\u001b[0m\n\u001b[1;32m    484\u001b[0m     \u001b[0margs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0mimage\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'txt'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlang\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mnice\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    485\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 486\u001b[0;31m     return {\n\u001b[0m\u001b[1;32m    487\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mBYTES\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0margs\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    488\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDICT\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m'text'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36m<lambda>\u001b[0;34m()\u001b[0m\n\u001b[1;32m    487\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mBYTES\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0margs\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    488\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDICT\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m'text'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 489\u001b[0;31m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mSTRING\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    490\u001b[0m     }[output_type]()\n\u001b[1;32m    491\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mrun_and_get_output\u001b[0;34m(image, extension, lang, config, nice, timeout, return_bytes)\u001b[0m\n\u001b[1;32m    350\u001b[0m         }\n\u001b[1;32m    351\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 352\u001b[0;31m         \u001b[0mrun_tesseract\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m**\u001b[0m\u001b[0mkwargs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    353\u001b[0m         return _read_output(\n\u001b[1;32m    354\u001b[0m             \u001b[0;34mf\"{kwargs['output_filename_base']}{extsep}{extension}\"\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mrun_tesseract\u001b[0;34m(input_filename, output_filename_base, extension, lang, config, nice, timeout)\u001b[0m\n\u001b[1;32m    278\u001b[0m             \u001b[0;32mraise\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    279\u001b[0m         \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 280\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mTesseractNotFoundError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    281\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    282\u001b[0m     \u001b[0;32mwith\u001b[0m \u001b[0mtimeout_manager\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mproc\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0merror_string\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mTesseractNotFoundError\u001b[0m: tesseract is not installed or it's not in your PATH. See README file for more information."
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!apt-get update\n",
+        "!apt-get install tesseract-ocr\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "-s6UPbJryVmM",
+        "outputId": "50898d15-8fdd-4ff6-945e-cc4a3bd53b8a"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rGet:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease [3,632 B]\n",
+            "\r0% [Waiting for headers] [Waiting for headers] [1 InRelease 3,632 B/3,632 B 100%] [Connected to r2u.\r0% [Waiting for headers] [Waiting for headers] [Connected to r2u.stat.illinois.edu (192.17.190.167)]\r                                                                                                    \rGet:2 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease [1,581 B]\n",
+            "\r0% [Waiting for headers] [Waiting for headers] [Connected to r2u.stat.illinois.edu (192.17.190.167)]\r                                                                                                    \rGet:3 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]\n",
+            "Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "Get:5 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]\n",
+            "Get:6 https://r2u.stat.illinois.edu/ubuntu jammy InRelease [6,555 B]\n",
+            "Get:7 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  Packages [1,315 kB]\n",
+            "Get:8 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]\n",
+            "Hit:9 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Get:10 https://r2u.stat.illinois.edu/ubuntu jammy/main all Packages [8,682 kB]\n",
+            "Get:11 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1,230 kB]\n",
+            "Hit:12 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Get:13 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [2,911 kB]\n",
+            "Hit:14 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Get:15 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [2,609 kB]\n",
+            "Get:16 https://r2u.stat.illinois.edu/ubuntu jammy/main amd64 Packages [2,659 kB]\n",
+            "Fetched 19.8 MB in 3s (6,060 kB/s)\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "The following additional packages will be installed:\n",
+            "  tesseract-ocr-eng tesseract-ocr-osd\n",
+            "The following NEW packages will be installed:\n",
+            "  tesseract-ocr tesseract-ocr-eng tesseract-ocr-osd\n",
+            "0 upgraded, 3 newly installed, 0 to remove and 22 not upgraded.\n",
+            "Need to get 4,816 kB of archives.\n",
+            "After this operation, 15.6 MB of additional disk space will be used.\n",
+            "Get:1 http://archive.ubuntu.com/ubuntu jammy/universe amd64 tesseract-ocr-eng all 1:4.00~git30-7274cfa-1.1 [1,591 kB]\n",
+            "Get:2 http://archive.ubuntu.com/ubuntu jammy/universe amd64 tesseract-ocr-osd all 1:4.00~git30-7274cfa-1.1 [2,990 kB]\n",
+            "Get:3 http://archive.ubuntu.com/ubuntu jammy/universe amd64 tesseract-ocr amd64 4.1.1-2.1build1 [236 kB]\n",
+            "Fetched 4,816 kB in 2s (2,886 kB/s)\n",
+            "Selecting previously unselected package tesseract-ocr-eng.\n",
+            "(Reading database ... 124956 files and directories currently installed.)\n",
+            "Preparing to unpack .../tesseract-ocr-eng_1%3a4.00~git30-7274cfa-1.1_all.deb ...\n",
+            "Unpacking tesseract-ocr-eng (1:4.00~git30-7274cfa-1.1) ...\n",
+            "Selecting previously unselected package tesseract-ocr-osd.\n",
+            "Preparing to unpack .../tesseract-ocr-osd_1%3a4.00~git30-7274cfa-1.1_all.deb ...\n",
+            "Unpacking tesseract-ocr-osd (1:4.00~git30-7274cfa-1.1) ...\n",
+            "Selecting previously unselected package tesseract-ocr.\n",
+            "Preparing to unpack .../tesseract-ocr_4.1.1-2.1build1_amd64.deb ...\n",
+            "Unpacking tesseract-ocr (4.1.1-2.1build1) ...\n",
+            "Setting up tesseract-ocr-eng (1:4.00~git30-7274cfa-1.1) ...\n",
+            "Setting up tesseract-ocr-osd (1:4.00~git30-7274cfa-1.1) ...\n",
+            "Setting up tesseract-ocr (4.1.1-2.1build1) ...\n",
+            "Processing triggers for man-db (2.10.2-1) ...\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens. Aumente o dpi para melhorar a qualidade do OCR, se necessário.\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "\n",
+        "    # Cria um novo documento Word\n",
+        "    document = Document()\n",
+        "\n",
+        "    # Itera sobre cada página convertida\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extrai o texto da imagem usando OCR.\n",
+        "        # Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\n",
+        "        text = pytesseract.image_to_string(page, lang='por')\n",
+        "\n",
+        "        # Adiciona um título para identificar a página (opcional)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "\n",
+        "        # Adiciona o texto extraído como um parágrafo no documento\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    # Salva o documento Word\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "if __name__ == '__main__':\n",
+        "    # Caminho do PDF escaneado\n",
+        "    pdf_path = '20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf'\n",
+        "\n",
+        "    # Caminho de saída para o arquivo Word. Note que estamos gerando um .docx.\n",
+        "    # Caso seja estritamente necessário o formato .doc, você poderá converter posteriormente.\n",
+        "    output_word_path = 'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\n",
+        "\n",
+        "    pdf_to_word(pdf_path, output_word_path)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 408
+        },
+        "id": "epFCvVcGycmK",
+        "outputId": "98310e7d-719c-4975-9d74-149fd73d9376"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "TesseractError",
+          "evalue": "(1, 'Error opening data file /usr/share/tesseract-ocr/4.00/tessdata/por.traineddata Please make sure the TESSDATA_PREFIX environment variable is set to your \"tessdata\" directory. Failed loading language \\'por\\' Tesseract couldn\\'t load any languages! Could not initialize tesseract.')",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mTesseractError\u001b[0m                            Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-18-7808aedb408b>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     35\u001b[0m     \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 37\u001b[0;31m     \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-18-7808aedb408b>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     15\u001b[0m         \u001b[0;31m# Extrai o texto da imagem usando OCR.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     16\u001b[0m         \u001b[0;31m# Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 17\u001b[0;31m         \u001b[0mtext\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpytesseract\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mimage_to_string\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpage\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlang\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'por'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     18\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     19\u001b[0m         \u001b[0;31m# Adiciona um título para identificar a página (opcional)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mimage_to_string\u001b[0;34m(image, lang, config, nice, output_type, timeout)\u001b[0m\n\u001b[1;32m    484\u001b[0m     \u001b[0margs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0mimage\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'txt'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlang\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mnice\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    485\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 486\u001b[0;31m     return {\n\u001b[0m\u001b[1;32m    487\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mBYTES\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0margs\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    488\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDICT\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m'text'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36m<lambda>\u001b[0;34m()\u001b[0m\n\u001b[1;32m    487\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mBYTES\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0margs\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    488\u001b[0m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDICT\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m'text'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 489\u001b[0;31m         \u001b[0mOutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mSTRING\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0;32mlambda\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mrun_and_get_output\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    490\u001b[0m     }[output_type]()\n\u001b[1;32m    491\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mrun_and_get_output\u001b[0;34m(image, extension, lang, config, nice, timeout, return_bytes)\u001b[0m\n\u001b[1;32m    350\u001b[0m         }\n\u001b[1;32m    351\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 352\u001b[0;31m         \u001b[0mrun_tesseract\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m**\u001b[0m\u001b[0mkwargs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    353\u001b[0m         return _read_output(\n\u001b[1;32m    354\u001b[0m             \u001b[0;34mf\"{kwargs['output_filename_base']}{extsep}{extension}\"\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pytesseract/pytesseract.py\u001b[0m in \u001b[0;36mrun_tesseract\u001b[0;34m(input_filename, output_filename_base, extension, lang, config, nice, timeout)\u001b[0m\n\u001b[1;32m    282\u001b[0m     \u001b[0;32mwith\u001b[0m \u001b[0mtimeout_manager\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mproc\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0merror_string\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    283\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mproc\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mreturncode\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 284\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mTesseractError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mproc\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mreturncode\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mget_errors\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0merror_string\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    285\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    286\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mTesseractError\u001b[0m: (1, 'Error opening data file /usr/share/tesseract-ocr/4.00/tessdata/por.traineddata Please make sure the TESSDATA_PREFIX environment variable is set to your \"tessdata\" directory. Failed loading language \\'por\\' Tesseract couldn\\'t load any languages! Could not initialize tesseract.')"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!apt-get update\n",
+        "!apt-get install -y tesseract-ocr tesseract-ocr-deu\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TFxyUrVxy3kv",
+        "outputId": "1f27661c-a9da-4bb0-82c2-fc97fcd3af2e"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rHit:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease\n",
+            "\r0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com (91.189.91.82)] [Connecting\r                                                                                                    \rHit:2 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease\n",
+            "Hit:3 http://security.ubuntu.com/ubuntu jammy-security InRelease\n",
+            "Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "Hit:5 https://r2u.stat.illinois.edu/ubuntu jammy InRelease\n",
+            "Hit:6 http://archive.ubuntu.com/ubuntu jammy-updates InRelease\n",
+            "Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease\n",
+            "Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Hit:9 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Hit:10 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "tesseract-ocr is already the newest version (4.1.1-2.1build1).\n",
+            "The following NEW packages will be installed:\n",
+            "  tesseract-ocr-deu\n",
+            "0 upgraded, 1 newly installed, 0 to remove and 22 not upgraded.\n",
+            "Need to get 744 kB of archives.\n",
+            "After this operation, 1,540 kB of additional disk space will be used.\n",
+            "Get:1 http://archive.ubuntu.com/ubuntu jammy/universe amd64 tesseract-ocr-deu all 1:4.00~git30-7274cfa-1.1 [744 kB]\n",
+            "Fetched 744 kB in 1s (1,409 kB/s)\n",
+            "Selecting previously unselected package tesseract-ocr-deu.\n",
+            "(Reading database ... 125003 files and directories currently installed.)\n",
+            "Preparing to unpack .../tesseract-ocr-deu_1%3a4.00~git30-7274cfa-1.1_all.deb ...\n",
+            "Unpacking tesseract-ocr-deu (1:4.00~git30-7274cfa-1.1) ...\n",
+            "Setting up tesseract-ocr-deu (1:4.00~git30-7274cfa-1.1) ...\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Instale o Tesseract e o pacote para alemão\n",
+        "!apt-get update\n",
+        "!apt-get install -y tesseract-ocr tesseract-ocr-deu\n",
+        "\n",
+        "# Configure a variável de ambiente para o Tesseract (opcional, se necessário)\n",
+        "import os\n",
+        "os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/4.00/tessdata/'\n",
+        "\n",
+        "# Código para converter PDF e extrair texto\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "    document = Document()\n",
+        "\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Utilizando o idioma alemão ('deu')\n",
+        "        text = pytesseract.image_to_string(page, lang='deu')\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "# Exemplo de caminhos no Colab (certifique-se de que o PDF foi enviado para o Colab)\n",
+        "pdf_path = '/content/seu_arquivo.pdf'         # Substitua pelo nome do seu arquivo PDF\n",
+        "output_word_path = '/content/saida.docx'\n",
+        "\n",
+        "pdf_to_word(pdf_path, output_word_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 827
+        },
+        "id": "xOJRtuUYzEhL",
+        "outputId": "4cf7b70c-0730-40ff-d5dc-00016c92d210"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rHit:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease\n",
+            "\r0% [Connecting to archive.ubuntu.com (185.125.190.83)] [Waiting for headers] [Connected to r2u.stat.\r                                                                                                    \rHit:2 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease\n",
+            "Hit:3 http://security.ubuntu.com/ubuntu jammy-security InRelease\n",
+            "Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "Hit:5 https://r2u.stat.illinois.edu/ubuntu jammy InRelease\n",
+            "Hit:6 http://archive.ubuntu.com/ubuntu jammy-updates InRelease\n",
+            "Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease\n",
+            "Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Hit:9 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Hit:10 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "tesseract-ocr is already the newest version (4.1.1-2.1build1).\n",
+            "tesseract-ocr-deu is already the newest version (1:4.00~git30-7274cfa-1.1).\n",
+            "0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "PDFPageCountError",
+          "evalue": "Unable to get page count.\nI/O Error: Couldn't open file '/content/seu_arquivo.pdf': No such file or directory.\n",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    601\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;34m\"Pages\"\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32min\u001b[0m \u001b[0md\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 602\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    603\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mValueError\u001b[0m: ",
+            "\nDuring handling of the above exception, another exception occurred:\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-20-1c7e3399c7ee>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     29\u001b[0m \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'/content/saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     30\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 31\u001b[0;31m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-20-1c7e3399c7ee>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     13\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     14\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 15\u001b[0;31m     \u001b[0mpages\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mconvert_from_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdpi\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m300\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     16\u001b[0m     \u001b[0mdocument\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mDocument\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     17\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mconvert_from_path\u001b[0;34m(pdf_path, dpi, output_folder, first_page, last_page, fmt, jpegopt, thread_count, userpw, ownerpw, use_cropbox, strict, transparent, single_file, output_file, poppler_path, grayscale, size, paths_only, use_pdftocairo, timeout, hide_annotations)\u001b[0m\n\u001b[1;32m    125\u001b[0m         \u001b[0mpoppler_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mas_posix\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    126\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 127\u001b[0;31m     page_count = pdfinfo_from_path(\n\u001b[0m\u001b[1;32m    128\u001b[0m         \u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0muserpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mownerpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mpoppler_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    129\u001b[0m     )[\"Pages\"]\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    609\u001b[0m         )\n\u001b[1;32m    610\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 611\u001b[0;31m         raise PDFPageCountError(\n\u001b[0m\u001b[1;32m    612\u001b[0m             \u001b[0;34mf\"Unable to get page count.\\n{err.decode('utf8', 'ignore')}\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    613\u001b[0m         )\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m: Unable to get page count.\nI/O Error: Couldn't open file '/content/seu_arquivo.pdf': No such file or directory.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens. Aumente o dpi para melhorar a qualidade do OCR, se necessário.\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "\n",
+        "    # Cria um novo documento Word\n",
+        "    document = Document()\n",
+        "\n",
+        "    # Itera sobre cada página convertida\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extrai o texto da imagem usando OCR.\n",
+        "        # Certifique-se de que o idioma esteja configurado corretamente (aqui usamos 'por' para português).\n",
+        "        text = pytesseract.image_to_string(page, lang='deu')\n",
+        "\n",
+        "        # Adiciona um título para identificar a página (opcional)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "\n",
+        "        # Adiciona o texto extraído como um parágrafo no documento\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    # Salva o documento Word\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "if __name__ == '__main__':\n",
+        "    # Caminho do PDF escaneado\n",
+        "    pdf_path = '20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf'\n",
+        "\n",
+        "    # Caminho de saída para o arquivo Word. Note que estamos gerando um .docx.\n",
+        "    # Caso seja estritamente necessário o formato .doc, você poderá converter posteriormente.\n",
+        "    output_word_path = 'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\n",
+        "\n",
+        "    pdf_to_word(pdf_path, output_word_path)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 478
+        },
+        "id": "QcuTbBADzMvb",
+        "outputId": "d3fffd55-e666-4ffb-c0f2-db14b5ed8f05"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "ValueError",
+          "evalue": "All strings must be XML compatible: Unicode or ASCII, no NULL bytes or control characters",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-22-733f1872c553>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     35\u001b[0m     \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'C:\\\\Users\\\\JoaoTaylor\\\\Downloads\\\\saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 37\u001b[0;31m     \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-22-733f1872c553>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     21\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     22\u001b[0m         \u001b[0;31m# Adiciona o texto extraído como um parágrafo no documento\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 23\u001b[0;31m         \u001b[0mdocument\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_paragraph\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     24\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     25\u001b[0m     \u001b[0;31m# Salva o documento Word\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/document.py\u001b[0m in \u001b[0;36madd_paragraph\u001b[0;34m(self, text, style)\u001b[0m\n\u001b[1;32m     67\u001b[0m         \u001b[0;32mbreak\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     68\u001b[0m         \"\"\"\n\u001b[0;32m---> 69\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_body\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_paragraph\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstyle\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     70\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     71\u001b[0m     def add_picture(\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/blkcntnr.py\u001b[0m in \u001b[0;36madd_paragraph\u001b[0;34m(self, text, style)\u001b[0m\n\u001b[1;32m     53\u001b[0m         \u001b[0mparagraph\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_add_paragraph\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     54\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 55\u001b[0;31m             \u001b[0mparagraph\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_run\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     56\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mstyle\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     57\u001b[0m             \u001b[0mparagraph\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstyle\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mstyle\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/text/paragraph.py\u001b[0m in \u001b[0;36madd_run\u001b[0;34m(self, text, style)\u001b[0m\n\u001b[1;32m     39\u001b[0m         \u001b[0mrun\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mRun\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mr\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     40\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 41\u001b[0;31m             \u001b[0mrun\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtext\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     42\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mstyle\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     43\u001b[0m             \u001b[0mrun\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstyle\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mstyle\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/text/run.py\u001b[0m in \u001b[0;36mtext\u001b[0;34m(self, text)\u001b[0m\n\u001b[1;32m    211\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msetter\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    212\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 213\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_r\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtext\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    214\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    215\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mproperty\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/text/run.py\u001b[0m in \u001b[0;36mtext\u001b[0;34m(self, text)\u001b[0m\n\u001b[1;32m    127\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m  \u001b[0;31m# pyright: ignore[reportIncompatibleMethodOverride]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    128\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclear_content\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 129\u001b[0;31m         \u001b[0m_RunContentAppender\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mappend_to_run_from_text\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    130\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    131\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0m_insert_rPr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mrPr\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mCT_RPr\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m->\u001b[0m \u001b[0mCT_RPr\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/text/run.py\u001b[0m in \u001b[0;36mappend_to_run_from_text\u001b[0;34m(cls, r, text)\u001b[0m\n\u001b[1;32m    246\u001b[0m         \u001b[0;34m\"\"\"Append inner-content elements for `text` to `r` element.\"\"\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    247\u001b[0m         \u001b[0mappender\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mcls\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 248\u001b[0;31m         \u001b[0mappender\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_text\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    249\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    250\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0madd_text\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/text/run.py\u001b[0m in \u001b[0;36madd_text\u001b[0;34m(self, text)\u001b[0m\n\u001b[1;32m    252\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mchar\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    253\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_char\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mchar\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 254\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mflush\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    255\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    256\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0madd_char\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mchar\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/text/run.py\u001b[0m in \u001b[0;36mflush\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    273\u001b[0m         \u001b[0mtext\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m\"\"\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_bfr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    274\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 275\u001b[0;31m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_r\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_t\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    276\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_bfr\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclear\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/text/run.py\u001b[0m in \u001b[0;36madd_t\u001b[0;34m(self, text)\u001b[0m\n\u001b[1;32m     39\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0madd_t\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m->\u001b[0m \u001b[0mCT_Text\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     40\u001b[0m         \u001b[0;34m\"\"\"Return a newly added `<w:t>` element containing `text`.\"\"\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 41\u001b[0;31m         \u001b[0mt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_add_t\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     42\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstrip\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m<\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     43\u001b[0m             \u001b[0mt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mqn\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"xml:space\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"preserve\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/docx/oxml/xmlchemy.py\u001b[0m in \u001b[0;36m_add_child\u001b[0;34m(obj, **attrs)\u001b[0m\n\u001b[1;32m    298\u001b[0m             \u001b[0mchild\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnew_method\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    299\u001b[0m             \u001b[0;32mfor\u001b[0m \u001b[0mkey\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvalue\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mattrs\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mitems\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 300\u001b[0;31m                 \u001b[0msetattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mchild\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mkey\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvalue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    301\u001b[0m             \u001b[0minsert_method\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mgetattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mobj\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_insert_method_name\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    302\u001b[0m             \u001b[0minsert_method\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mchild\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32msrc/lxml/etree.pyx\u001b[0m in \u001b[0;36mlxml.etree._Element.text.__set__\u001b[0;34m()\u001b[0m\n",
+            "\u001b[0;32msrc/lxml/apihelpers.pxi\u001b[0m in \u001b[0;36mlxml.etree._setNodeText\u001b[0;34m()\u001b[0m\n",
+            "\u001b[0;32msrc/lxml/apihelpers.pxi\u001b[0m in \u001b[0;36mlxml.etree._createTextNode\u001b[0;34m()\u001b[0m\n",
+            "\u001b[0;32msrc/lxml/apihelpers.pxi\u001b[0m in \u001b[0;36mlxml.etree._utf8\u001b[0;34m()\u001b[0m\n",
+            "\u001b[0;31mValueError\u001b[0m: All strings must be XML compatible: Unicode or ASCII, no NULL bytes or control characters"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Instale as dependências necessárias no Colab (execute apenas se ainda não estiver instalado)\n",
+        "!apt-get update\n",
+        "!apt-get install -y tesseract-ocr tesseract-ocr-deu poppler-utils\n",
+        "\n",
+        "import os\n",
+        "os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/4.00/tessdata/'\n",
+        "\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "import re\n",
+        "\n",
+        "def clean_text(text):\n",
+        "    \"\"\"\n",
+        "    Remove caracteres de controle não permitidos no XML.\n",
+        "    \"\"\"\n",
+        "    # Remove caracteres de controle: de 0x00 a 0x08, 0x0B-0x0C, 0x0E-0x1F\n",
+        "    return re.sub(r'[\\x00-\\x08\\x0B-\\x0C\\x0E-\\x1F]', '', text)\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens com boa resolução para o OCR\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "    document = Document()\n",
+        "\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extração de texto com o idioma alemão (deu)\n",
+        "        text = pytesseract.image_to_string(page, lang='deu')\n",
+        "        # Limpa o texto removendo caracteres incompatíveis\n",
+        "        text = clean_text(text)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "# Exemplo de caminhos no Colab (faça upload do seu PDF ou monte o Google Drive)\n",
+        "pdf_path = '/content/seu_arquivo.pdf'         # Substitua pelo nome/caminho do seu arquivo PDF\n",
+        "output_word_path = '/content/saida.docx'\n",
+        "\n",
+        "pdf_to_word(pdf_path, output_word_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 845
+        },
+        "id": "5FyK1L5nz8gz",
+        "outputId": "72f4308c-2b89-4fee-82ea-ad62b557b78b"
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rHit:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease\n",
+            "\r0% [Connecting to archive.ubuntu.com (91.189.91.83)] [Connecting to security.ubuntu.com] [Connecting\r                                                                                                    \rHit:2 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease\n",
+            "\r0% [Waiting for headers] [Connecting to security.ubuntu.com] [Connected to r2u.stat.illinois.edu (19\r                                                                                                    \rHit:3 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "\r0% [Waiting for headers] [Connecting to security.ubuntu.com] [Waiting for headers] [Connecting to pp\r0% [Waiting for headers] [Connecting to security.ubuntu.com (91.189.91.82)] [Waiting for headers] [C\r                                                                                                    \rHit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease\n",
+            "\r0% [Waiting for headers] [Connecting to security.ubuntu.com (91.189.91.82)] [Waiting for headers] [C\r0% [Waiting for headers] [Waiting for headers] [Waiting for headers] [Connecting to ppa.launchpadcon\r                                                                                                    \rHit:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease\n",
+            "\r0% [Waiting for headers] [Waiting for headers] [Connecting to ppa.launchpadcontent.net (185.125.190.\r                                                                                                    \rHit:6 http://security.ubuntu.com/ubuntu jammy-security InRelease\n",
+            "Hit:7 https://r2u.stat.illinois.edu/ubuntu jammy InRelease\n",
+            "Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Hit:9 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Hit:10 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "tesseract-ocr is already the newest version (4.1.1-2.1build1).\n",
+            "tesseract-ocr-deu is already the newest version (1:4.00~git30-7274cfa-1.1).\n",
+            "poppler-utils is already the newest version (22.02.0-2ubuntu0.6).\n",
+            "0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "PDFPageCountError",
+          "evalue": "Unable to get page count.\nI/O Error: Couldn't open file '/content/seu_arquivo.pdf': No such file or directory.\n",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    601\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;34m\"Pages\"\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32min\u001b[0m \u001b[0md\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 602\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    603\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mValueError\u001b[0m: ",
+            "\nDuring handling of the above exception, another exception occurred:\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-23-905773634c9f>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     38\u001b[0m \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'/content/saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     39\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 40\u001b[0;31m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-23-905773634c9f>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     20\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     21\u001b[0m     \u001b[0;31m# Converte o PDF em imagens com boa resolução para o OCR\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 22\u001b[0;31m     \u001b[0mpages\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mconvert_from_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdpi\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m300\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     23\u001b[0m     \u001b[0mdocument\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mDocument\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     24\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mconvert_from_path\u001b[0;34m(pdf_path, dpi, output_folder, first_page, last_page, fmt, jpegopt, thread_count, userpw, ownerpw, use_cropbox, strict, transparent, single_file, output_file, poppler_path, grayscale, size, paths_only, use_pdftocairo, timeout, hide_annotations)\u001b[0m\n\u001b[1;32m    125\u001b[0m         \u001b[0mpoppler_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mas_posix\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    126\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 127\u001b[0;31m     page_count = pdfinfo_from_path(\n\u001b[0m\u001b[1;32m    128\u001b[0m         \u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0muserpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mownerpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mpoppler_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    129\u001b[0m     )[\"Pages\"]\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    609\u001b[0m         )\n\u001b[1;32m    610\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 611\u001b[0;31m         raise PDFPageCountError(\n\u001b[0m\u001b[1;32m    612\u001b[0m             \u001b[0;34mf\"Unable to get page count.\\n{err.decode('utf8', 'ignore')}\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    613\u001b[0m         )\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m: Unable to get page count.\nI/O Error: Couldn't open file '/content/seu_arquivo.pdf': No such file or directory.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "uploaded = files.upload()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 110
+        },
+        "id": "mcEqVPK80ZBq",
+        "outputId": "76adbb4c-b6d1-4fbd-b0e3-0fed99e4bb3f"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-a5ac2289-4477-4c6e-a139-58c3432b78cd\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-a5ac2289-4477-4c6e-a139-58c3432b78cd\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf to 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Instale as dependências necessárias no Colab (execute apenas se ainda não estiver instalado)\n",
+        "!apt-get update\n",
+        "!apt-get install -y tesseract-ocr tesseract-ocr-deu poppler-utils\n",
+        "\n",
+        "import os\n",
+        "os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/4.00/tessdata/'\n",
+        "\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "import re\n",
+        "\n",
+        "def clean_text(text):\n",
+        "    \"\"\"\n",
+        "    Remove caracteres de controle não permitidos no XML.\n",
+        "    \"\"\"\n",
+        "    # Remove caracteres de controle: de 0x00 a 0x08, 0x0B-0x0C, 0x0E-0x1F\n",
+        "    return re.sub(r'[\\x00-\\x08\\x0B-\\x0C\\x0E-\\x1F]', '', text)\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens com boa resolução para o OCR\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "    document = Document()\n",
+        "\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extração de texto com o idioma alemão (deu)\n",
+        "        text = pytesseract.image_to_string(page, lang='deu')\n",
+        "        # Limpa o texto removendo caracteres incompatíveis\n",
+        "        text = clean_text(text)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "# Exemplo de caminhos no Colab (faça upload do seu PDF ou monte o Google Drive)\n",
+        "pdf_path = '/content/20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf'         # Substitua pelo nome/caminho do seu arquivo PDF\n",
+        "output_word_path = '/content/saida.docx'\n",
+        "\n",
+        "pdf_to_word(pdf_path, output_word_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 862
+        },
+        "id": "lODl531h0rVR",
+        "outputId": "3090f9b2-5ea9-44cc-9589-939c4a2e80e0"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rHit:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease\n",
+            "\r0% [Connecting to archive.ubuntu.com] [Waiting for headers] [Connected to r2u.stat.illinois.edu (192\r                                                                                                    \rHit:2 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease\n",
+            "Hit:3 http://security.ubuntu.com/ubuntu jammy-security InRelease\n",
+            "Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "Hit:5 https://r2u.stat.illinois.edu/ubuntu jammy InRelease\n",
+            "Hit:6 http://archive.ubuntu.com/ubuntu jammy-updates InRelease\n",
+            "Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease\n",
+            "Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Hit:9 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Hit:10 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "tesseract-ocr is already the newest version (4.1.1-2.1build1).\n",
+            "tesseract-ocr-deu is already the newest version (1:4.00~git30-7274cfa-1.1).\n",
+            "poppler-utils is already the newest version (22.02.0-2ubuntu0.6).\n",
+            "0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "PDFPageCountError",
+          "evalue": "Unable to get page count.\nI/O Error: Couldn't open file '20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf to 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf': No such file or directory.\n",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    601\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;34m\"Pages\"\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32min\u001b[0m \u001b[0md\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 602\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    603\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mValueError\u001b[0m: ",
+            "\nDuring handling of the above exception, another exception occurred:\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-25-8ff750bb53cc>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     38\u001b[0m \u001b[0moutput_word_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'/content/saida.docx'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     39\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 40\u001b[0;31m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m<ipython-input-25-8ff750bb53cc>\u001b[0m in \u001b[0;36mpdf_to_word\u001b[0;34m(pdf_path, output_word_path)\u001b[0m\n\u001b[1;32m     20\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mpdf_to_word\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moutput_word_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     21\u001b[0m     \u001b[0;31m# Converte o PDF em imagens com boa resolução para o OCR\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 22\u001b[0;31m     \u001b[0mpages\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mconvert_from_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdpi\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m300\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     23\u001b[0m     \u001b[0mdocument\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mDocument\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     24\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mconvert_from_path\u001b[0;34m(pdf_path, dpi, output_folder, first_page, last_page, fmt, jpegopt, thread_count, userpw, ownerpw, use_cropbox, strict, transparent, single_file, output_file, poppler_path, grayscale, size, paths_only, use_pdftocairo, timeout, hide_annotations)\u001b[0m\n\u001b[1;32m    125\u001b[0m         \u001b[0mpoppler_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mas_posix\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    126\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 127\u001b[0;31m     page_count = pdfinfo_from_path(\n\u001b[0m\u001b[1;32m    128\u001b[0m         \u001b[0mpdf_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0muserpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mownerpw\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mpoppler_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mpoppler_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    129\u001b[0m     )[\"Pages\"]\n",
+            "\u001b[0;32m/usr/local/lib/python3.11/dist-packages/pdf2image/pdf2image.py\u001b[0m in \u001b[0;36mpdfinfo_from_path\u001b[0;34m(pdf_path, userpw, ownerpw, poppler_path, rawdates, timeout, first_page, last_page)\u001b[0m\n\u001b[1;32m    609\u001b[0m         )\n\u001b[1;32m    610\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 611\u001b[0;31m         raise PDFPageCountError(\n\u001b[0m\u001b[1;32m    612\u001b[0m             \u001b[0;34mf\"Unable to get page count.\\n{err.decode('utf8', 'ignore')}\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    613\u001b[0m         )\n",
+            "\u001b[0;31mPDFPageCountError\u001b[0m: Unable to get page count.\nI/O Error: Couldn't open file '20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf to 20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf': No such file or directory.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!ls /content\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "e6_d84Lu1O0D",
+        "outputId": "d3515036-202a-4a77-be6e-c596bc0498b2"
+      },
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "'20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf'   sample_data\n",
+            "'20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX.pdf'\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Instale as dependências necessárias no Colab (execute apenas se ainda não estiver instalado)\n",
+        "!apt-get update\n",
+        "!apt-get install -y tesseract-ocr tesseract-ocr-deu poppler-utils\n",
+        "\n",
+        "import os\n",
+        "os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/4.00/tessdata/'\n",
+        "\n",
+        "from pdf2image import convert_from_path\n",
+        "import pytesseract\n",
+        "from docx import Document\n",
+        "import re\n",
+        "\n",
+        "def clean_text(text):\n",
+        "    \"\"\"\n",
+        "    Remove caracteres de controle não permitidos no XML.\n",
+        "    \"\"\"\n",
+        "    # Remove caracteres de controle: de 0x00 a 0x08, 0x0B-0x0C, 0x0E-0x1F\n",
+        "    return re.sub(r'[\\x00-\\x08\\x0B-\\x0C\\x0E-\\x1F]', '', text)\n",
+        "\n",
+        "def pdf_to_word(pdf_path, output_word_path):\n",
+        "    # Converte o PDF em imagens com boa resolução para o OCR\n",
+        "    pages = convert_from_path(pdf_path, dpi=300)\n",
+        "    document = Document()\n",
+        "\n",
+        "    for page_number, page in enumerate(pages, start=1):\n",
+        "        # Extração de texto com o idioma alemão (deu)\n",
+        "        text = pytesseract.image_to_string(page, lang='deu')\n",
+        "        # Limpa o texto removendo caracteres incompatíveis\n",
+        "        text = clean_text(text)\n",
+        "        document.add_heading(f'Página {page_number}', level=2)\n",
+        "        document.add_paragraph(text)\n",
+        "\n",
+        "    document.save(output_word_path)\n",
+        "    print(f\"Documento salvo em: {output_word_path}\")\n",
+        "\n",
+        "# Exemplo de caminhos no Colab (faça upload do seu PDF ou monte o Google Drive)\n",
+        "pdf_path = '/content/20211209 AVV Art. 28 Abs 3 DS-GVO_plenum_MAXWORX (1).pdf'         # Substitua pelo nome/caminho do seu arquivo PDF\n",
+        "output_word_path = '/content/saida.docx'\n",
+        "\n",
+        "pdf_to_word(pdf_path, output_word_path)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "A-4CKNsa1jeI",
+        "outputId": "7c4000c0-dcfd-432d-b8b6-e7d78caccb9d"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\r0% [Working]\r            \rHit:1 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease\n",
+            "Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease\n",
+            "Hit:3 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease\n",
+            "Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease\n",
+            "Hit:5 https://r2u.stat.illinois.edu/ubuntu jammy InRelease\n",
+            "Hit:6 http://archive.ubuntu.com/ubuntu jammy-updates InRelease\n",
+            "Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease\n",
+            "Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease\n",
+            "Hit:9 https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu jammy InRelease\n",
+            "Hit:10 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease\n",
+            "Reading package lists... Done\n",
+            "W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)\n",
+            "Reading package lists... Done\n",
+            "Building dependency tree... Done\n",
+            "Reading state information... Done\n",
+            "tesseract-ocr is already the newest version (4.1.1-2.1build1).\n",
+            "tesseract-ocr-deu is already the newest version (1:4.00~git30-7274cfa-1.1).\n",
+            "poppler-utils is already the newest version (22.02.0-2ubuntu0.6).\n",
+            "0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.\n",
+            "Documento salvo em: /content/saida.docx\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n"
+      ],
+      "metadata": {
+        "id": "erAShLBS2w2I"
+      },
+      "execution_count": 28,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "files.download('/content/saida.docx')\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 17
+        },
+        "id": "iBjylQQ921nX",
+        "outputId": "4f02ce64-56ee-418f-ce61-7afd4dbb875e"
+      },
+      "execution_count": 29,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Javascript object>"
+            ],
+            "application/javascript": [
+              "\n",
+              "    async function download(id, filename, size) {\n",
+              "      if (!google.colab.kernel.accessAllowed) {\n",
+              "        return;\n",
+              "      }\n",
+              "      const div = document.createElement('div');\n",
+              "      const label = document.createElement('label');\n",
+              "      label.textContent = `Downloading \"${filename}\": `;\n",
+              "      div.appendChild(label);\n",
+              "      const progress = document.createElement('progress');\n",
+              "      progress.max = size;\n",
+              "      div.appendChild(progress);\n",
+              "      document.body.appendChild(div);\n",
+              "\n",
+              "      const buffers = [];\n",
+              "      let downloaded = 0;\n",
+              "\n",
+              "      const channel = await google.colab.kernel.comms.open(id);\n",
+              "      // Send a message to notify the kernel that we're ready.\n",
+              "      channel.send({})\n",
+              "\n",
+              "      for await (const message of channel.messages) {\n",
+              "        // Send a message to notify the kernel that we're ready.\n",
+              "        channel.send({})\n",
+              "        if (message.buffers) {\n",
+              "          for (const buffer of message.buffers) {\n",
+              "            buffers.push(buffer);\n",
+              "            downloaded += buffer.byteLength;\n",
+              "            progress.value = downloaded;\n",
+              "          }\n",
+              "        }\n",
+              "      }\n",
+              "      const blob = new Blob(buffers, {type: 'application/binary'});\n",
+              "      const a = document.createElement('a');\n",
+              "      a.href = window.URL.createObjectURL(blob);\n",
+              "      a.download = filename;\n",
+              "      div.appendChild(a);\n",
+              "      a.click();\n",
+              "      div.remove();\n",
+              "    }\n",
+              "  "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Javascript object>"
+            ],
+            "application/javascript": [
+              "download(\"download_586f7cc9-dfe1-4ba6-a3a8-14e1570d8774\", \"saida.docx\", 51592)"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [],
+      "metadata": {
+        "id": "X1jzW0KG1R20"
+      }
+    }
+  ]
+}
